@@ -195,21 +195,6 @@ Every unanswered question is a gap the agent will guess. Guessing is always more
 
 ---
 
-## What comes next (not part of this skill)
-
-After `AGENTS.md` and `Makefile`, the next most valuable files to add (in order):
-
-| File | What it does | When to add |
-|---|---|---|
-| `PROGRESS.md` | Tracks current state, active feature, decisions, next steps | After first multi-session task |
-| `feature_list.json` | Machine-readable feature list with states: `not_started`, `active`, `blocked`, `passing` | When you have >3 features |
-| `DECISIONS.md` | Records why decisions were made (lightweight ADR) | After first architectural decision |
-| `BACKLOG.md` | Dump for things noticed outside current scope | When enforcing WIP=1 |
-| `docs/api-patterns.md` | API conventions and patterns for the project | When `AGENTS.md` grows past 100 lines |
-| `scripts/verify.sh` | Per-feature verification script | When features need specific checks beyond `make check` |
-
----
-
 ## Anti-patterns to avoid
 
 1. **Instruction bloat.** `AGENTS.md` over 150 lines. If it grows, split into `docs/*.md` and keep `AGENTS.md` as a router.
