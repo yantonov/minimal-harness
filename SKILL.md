@@ -1,11 +1,11 @@
 ---
 name: minimal-harness
-description: Bootstraps a minimal but complete agent harness for a project — `AGENTS.md` (the router/entry point for AI agents) and `Makefile` (single-command verification). Based on the Harness methodology.
+description: Bootstraps a minimal agent harness for a project — `AGENTS.md` (the router/entry point for AI agents) and `Makefile` (single-command verification). Based on the Harness methodology.
 ---
 
-# Minimal Project Setup
+# Minimal Harness
 
-Bootstraps a minimal but complete agent harness for a project: `AGENTS.md` (the router/entry point for AI agents) and `Makefile` (single-command verification). Based on the [Harness methodology](https://github.com/justxor/Harness_ru).
+Bootstraps a minimal agent harness for a project: `AGENTS.md` (the router/entry point for AI agents) and `Makefile` (single-command verification). Based on the [Harness methodology](https://github.com/justxor/Harness_ru).
 
 ## What this skill does
 
