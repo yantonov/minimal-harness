@@ -1,62 +1,40 @@
 ---
 name: minimal-harness
-description: Bootstraps a minimal agent harness for a project — `AGENTS.md` (the router/entry point for AI agents) and `Makefile` (single-command verification). Based on the Harness methodology.
+description: Use when a project lacks `AGENTS.md` or a single-command verification (`make check`), or when asked to bootstrap, set up, or add an agent harness. Creates both. Based on the Harness methodology.
 ---
 
 # Minimal Harness
 
-Bootstraps a minimal agent harness for a project: `AGENTS.md` (the router/entry point for AI agents) and `Makefile` (single-command verification). Based on the [Harness methodology](https://github.com/justxor/Harness_ru).
+Creates the two files every agent harness starts from, for a project with a working codebase. Based on the [Harness methodology](https://github.com/justxor/Harness_ru).
 
-## What this skill does
+- **`AGENTS.md`**: the router agents read first. A router names where to look; deep detail lives in `docs/*.md` behind pointers.
+- **`Makefile`**: `make check` runs lint + types + tests (+ e2e) and returns one green/red verdict.
 
-Given a project with a working codebase, this skill creates two files that form the foundation of an agent harness:
-
-1. **`AGENTS.md`** — the standard entry point that tells any AI agent: what this project is, how to run it, how to verify it, what rules must never be broken, and where to find deeper docs.
-2. **`Makefile`** — a single `make check` command that runs all verification (lint + types + tests + e2e) and returns a green/red verdict.
-
-After running this skill, the agent should pass the **cold start test**: a fresh session with only the repository contents can answer all five questions (what the system is, how to run it, how to verify it, what rules can't be broken, and where the current work is).
-
----
-
-## Prerequisites
-
-- An existing project directory with a working codebase under `src/` or similar.
-- Known tech stack (language, framework, database, cache/queue).
-- Known package manager and test framework.
-- A `docs/` directory is optional but recommended.
+Done when the cold start test (Step 4) passes.
 
 ---
 
 ## Step 1: Gather project information
 
-Before creating any files, ask the user for or discover from the codebase:
+Discover each item from the repo (manifests, configs, imports, existing scripts); ask the user only for what the repo does not show.
 
-| Question | How to find it |
-|---|---|
-| **Language & version** | `pyproject.toml`, `package.json`, `go.mod`, `Cargo.toml`, etc. |
-| **Framework** | imports in `src/`, config files |
-| **Database** | connection strings, ORM config |
-| **Cache / queue** (optional) | Redis, RabbitMQ, etc. |
-| **Package manager** | `uv`, `poetry`, `npm`, `pnpm`, `yarn`, `go`, `cargo` |
-| **Test framework** | `pytest`, `jest`, `vitest`, `go test`, etc. |
-| **Type checker** | `mypy`, `tsc`, `pyright`, or "none" |
-| **Linter** | `ruff`, `eslint`, `biome`, `golangci-lint`, etc. |
-| **Dev server command** | the exact shell command to start the app locally |
-| **E2E test command** (if any) | command for integration/end-to-end tests |
-| **Hard constraints** | does the project have auth requirements, SQL rules, security rules, forbidden operations? |
+- Language and version, framework, database, cache/queue
+- Package manager, test framework, type checker, linter
+- Exact dev server command
+- E2E command, if any
+- Hard constraints: auth requirements, SQL rules, security rules, forbidden operations (the user is the only source)
 
-If the user doesn't know an answer, leave a `TODO` placeholder in the generated file and note it.
+Unknown items become `TODO` placeholders. Done when every item is either filled or listed as a `TODO`.
 
 ---
 
 ## Step 2: Create `AGENTS.md`
 
-Create `AGENTS.md` in the repository root. It must follow these rules:
+Write it in the repository root, ≤150 lines. It is a router: when it outgrows the limit, move detail to `docs/*.md` and point to it.
 
-- **50–150 lines maximum.** If you find yourself writing more, move details to `docs/*.md` files and link to them from `AGENTS.md`.
-- **Critical rules go at the top or bottom, never in the middle** (models have worse recall from the middle of long texts).
-- **Every rule has a source and an expiration condition** (or at minimum: why it exists).
-- **The file is a router, not an encyclopedia.** It tells the agent *where to look*, not everything there is to know.
+- Put critical rules at the top or bottom (recall is weakest mid-file).
+- Give every rule its reason, so a later reader can tell when it expires.
+- Leave style to the linter: say "run `make lint`" instead of listing style rules.
 
 ### Template
 
@@ -66,6 +44,9 @@ Create `AGENTS.md` in the repository root. It must follow these rules:
 ## Project
 <One or two sentences: what this is and why it exists.>
 Stack: <language + version>, <framework>, <database>, <cache/queue>.
+
+## Starting a session
+Read `PROGRESS.md` for the current work and `BACKLOG.md` for parked issues.
 
 ## Commands
 - Setup: `<package manager install command>`
@@ -85,19 +66,16 @@ A feature is done only when:
 NOT done: "code is written", "looks right", "unit tests pass", "works on my machine".
 
 ## Hard constraints (MUST / MUST NOT)
-<Fill in based on the project. Examples:>
+<Only the project's real constraints, each with its reason. Examples:>
 1. MUST: all endpoints use <auth mechanism>.
-2. MUST: all SQL is parameterized. Never concatenate strings into queries.
-3. MUST: external data is validated at the domain boundary.
-4. MUST NOT: `eval`, `exec`, or deserialize untrusted data.
-5. MUST NOT: change `migrations/` or `infra/` without explicit human approval.
-6. MUST NOT: commit secrets; all values come from environment variables.
+2. MUST: all SQL is parameterized (injection).
+3. MUST NOT: change `migrations/` or `infra/` without explicit human approval.
+4. MUST NOT: commit secrets; all values come from environment variables.
 
 ## Work rules
 - **WIP=1.** Exactly one feature in `active` state at a time.
-- No refactoring, renaming, or reorganizing outside the active feature.
-  If you notice a problem, write it to `BACKLOG.md` and continue.
-- Priority order: correctness → performance → style. Do not reverse.
+- Stay inside the active feature. Write any other problem you notice to `BACKLOG.md` and continue.
+- Priority order: correctness → performance → style.
 
 ## Escalate to human (stop and ask)
 - Changing database schema or migrations.
@@ -107,29 +85,21 @@ NOT done: "code is written", "looks right", "unit tests pass", "works on my mach
 - Deleting anything that cannot be recovered.
 
 ## Details (read when needed)
-- `docs/api-patterns.md` — required before adding any endpoint
-- `docs/db-rules.md` — required before changing models or migrations
-- `docs/testing.md` — when writing tests
-- `docs/security.md` — when working with auth, payments, or personal data
+- `docs/api-patterns.md`: before adding any endpoint
+- `docs/db-rules.md`: before changing models or migrations
+- `docs/testing.md`: when writing tests
+- `docs/security.md`: when working with auth, payments, or personal data
 ```
 
-### Placeholder handling
+Keep only `Details` entries whose file exists or that you create now. Unknown commands become `TODO: fill in <command>` lines, resolved with the user before finishing.
 
-If a section has no known answer, use:
-```markdown
-## Commands
-- Setup: `TODO: fill in package manager install command`
-- Dev server: `TODO: fill in dev server command`
-- Tests: `TODO: fill in test command`
-```
-
-Replace `TODO` items by asking the user before finishing.
+Done when every template section is filled or marked `TODO`, and every file it names exists.
 
 ---
 
 ## Step 3: Create `Makefile`
 
-Create a `Makefile` in the repository root. The goal is **one command, one green/red answer** for full verification.
+Write it in the repository root. Every target runs the real command; a target that only echoes is a lie.
 
 ### Template
 
@@ -159,46 +129,20 @@ check: lint types test <if E2E exists:e2e</if>
 <TAB>@echo "ALL CHECKS PASSED"
 ```
 
-### Fill in based on stack
+Unknown command: `<TAB># TODO: fill in test command` plus `<TAB>@exit 1`, so `make check` stays red until it is filled.
 
-| Stack | setup | test | types | lint |
-|---|---|---|---|---|
-| Python (uv) | `uv sync` | `uv run pytest -x -q` | `uv run mypy src --strict` | `uv run ruff check src` |
-| Python (poetry) | `poetry install` | `poetry run pytest -x -q` | `poetry run mypy src --strict` | `poetry run ruff check src` |
-| Node (npm) | `npm ci` | `npm test` | `npx tsc --noEmit` | `npx eslint src` |
-| Node (pnpm) | `pnpm install --frozen-lockfile` | `pnpm test` | `pnpm tsc --noEmit` | `pnpm lint` |
-| Go | `go mod download` | `go test ./...` | `go vet ./...` | `golangci-lint run` |
-| Rust | `cargo build` | `cargo test` | `cargo check` | `cargo clippy` |
-
-### If a command is unknown
-
-Leave a comment placeholder and ask the user:
-```makefile
-test:
-<TAB># TODO: fill in test command
-<TAB>@echo "TODO: add test command"
-```
+Done when `make check` has run, and every red result is either fixed or traced to a `TODO`.
 
 ---
 
-## Step 4: Verify with cold start test
+## Step 4: Cold start test
 
-After creating both files, run this self-check mentally:
+Reread only the two files and answer from them:
 
-1. **What is this system and why does it exist?** — `AGENTS.md` > Project section answers this.
-2. **How do I run it?** — `AGENTS.md` > Commands section answers this.
-3. **How do I verify it?** — `make check` exists and is listed.
-4. **What rules must never be broken?** — `AGENTS.md` > Hard constraints section.
-5. **Where is the current work?** — `AGENTS.md` > Starting a session points to `PROGRESS.md`.
+1. What is this system and why does it exist? (`Project`)
+2. How do I run it? (`Commands`)
+3. How do I verify it? (`make check`)
+4. What rules must never be broken? (`Hard constraints`)
+5. Where is the current work? (`Starting a session` → `PROGRESS.md`)
 
-Every unanswered question is a gap the agent will guess. Guessing is always more expensive than writing the answer once.
-
----
-
-## Anti-patterns to avoid
-
-1. **Instruction bloat.** `AGENTS.md` over 150 lines. If it grows, split into `docs/*.md` and keep `AGENTS.md` as a router.
-2. **Vague commands.** `make test` that doesn't actually run tests. Every command must actually do what it says.
-3. **Style rules in AGENTS.md.** Style is enforced by the linter. `AGENTS.md` should say "run `make lint`", not list 20 style rules.
-4. **Missing condition for escalation.** Without explicit "stop and ask" triggers, the agent will guess on dangerous changes.
-5. **No Definition of Done.** "Code is written" is not done. Define what "done" means in verifiable terms.
+Each unanswered question is a gap the agent will fill by guessing, and writing the answer once costs less. Done when all five are answered; report remaining `TODO`s to the user.
