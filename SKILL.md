@@ -22,6 +22,7 @@ Discover each item from the repo (manifests, configs, imports, existing scripts)
 - Package manager, test framework, type checker, linter
 - Exact dev server command
 - E2E command, if any
+- Task tracker: whether `bl` (backlogger) is available to hold work as tickets
 - Hard constraints: auth requirements, SQL rules, security rules, forbidden operations (the user is the only source)
 
 Unknown items become `TODO` placeholders. Done when every item is either filled or listed as a `TODO`.
@@ -46,7 +47,11 @@ Write it in the repository root, ≤150 lines. It is a router: when it outgrows 
 Stack: <language + version>, <framework>, <database>, <cache/queue>.
 
 ## Starting a session
-Read `PROGRESS.md` for the current work and `BACKLOG.md` for parked issues.
+Work lives in `bl` tickets: one committed `backlog.md` derived from `.tickets/`, so the tracker stays in the repo and never drifts from the code.
+- `bl available` — claimable tickets (open, deps satisfied)
+- `bl started` — tickets in progress
+- `bl show <id> --json` — one ticket in full
+- `bl help` — the full command surface
 
 ## Commands
 - Setup: `<package manager install command>`
@@ -61,7 +66,7 @@ Read `PROGRESS.md` for the current work and `BACKLOG.md` for parked issues.
 A feature is done only when:
 - `make check` is green (including tests that existed before this session).
 - The feature's specific verification passes.
-- `PROGRESS.md` is updated.
+- The ticket is closed with `bl done <id>`.
 
 NOT done: "code is written", "looks right", "unit tests pass", "works on my machine".
 
@@ -73,8 +78,8 @@ NOT done: "code is written", "looks right", "unit tests pass", "works on my mach
 4. MUST NOT: commit secrets; all values come from environment variables.
 
 ## Work rules
-- **WIP=1.** Exactly one feature in `active` state at a time.
-- Stay inside the active feature. Write any other problem you notice to `BACKLOG.md` and continue.
+- **WIP=1.** Claim one ticket at a time: `bl start <id>`, and close it with `bl done <id>` before claiming another.
+- Stay inside the claimed ticket. Record any other problem with `bl add "<title>"` and continue.
 - Priority order: correctness → performance → style.
 
 ## Escalate to human (stop and ask)
@@ -91,7 +96,7 @@ NOT done: "code is written", "looks right", "unit tests pass", "works on my mach
 - `docs/security.md`: when working with auth, payments, or personal data
 ```
 
-Keep only `Details` entries whose file exists or that you create now. Unknown commands become `TODO: fill in <command>` lines, resolved with the user before finishing.
+Keep only `Details` entries whose file exists or that you create now. Unknown commands become `TODO: fill in <command>` lines, resolved with the user before finishing. If the project does not track work with `bl`, point `Starting a session` at the tracker it actually uses instead.
 
 Done when every template section is filled or marked `TODO`, and every file it names exists.
 
@@ -143,6 +148,6 @@ Reread only the two files and answer from them:
 2. How do I run it? (`Commands`)
 3. How do I verify it? (`make check`)
 4. What rules must never be broken? (`Hard constraints`)
-5. Where is the current work? (`Starting a session` → `PROGRESS.md`)
+5. Where is the current work? (`Starting a session` → `bl started`)
 
 Each unanswered question is a gap the agent will fill by guessing, and writing the answer once costs less. Done when all five are answered; report remaining `TODO`s to the user.
