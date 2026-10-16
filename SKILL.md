@@ -5,7 +5,7 @@ description: Use when a project lacks `AGENTS.md` or a single-command verificati
 
 # Minimal Harness
 
-Creates the two files every agent harness starts from, for a project with a working codebase. Based on the [Harness methodology](https://github.com/justxor/Harness_ru).
+Creates the two files every agent harness starts from, for a project with a working codebase.
 
 - **`AGENTS.md`**: the router agents read first. A router names where to look; deep detail lives in `docs/*.md` behind pointers.
 - **`Makefile`**: `make check` runs lint + types + tests (+ e2e) and returns one green/red verdict.
