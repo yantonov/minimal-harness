@@ -1,6 +1,6 @@
 ---
 name: minimal-harness
-description: Use when a project lacks `AGENTS.md` or a single-command verification (`make check`), or when asked to bootstrap, set up, or add an agent harness. Creates both. Based on the Harness methodology.
+description: Use when a project lacks `AGENTS.md` or `make check`, or when asked to bootstrap an agent harness.
 ---
 
 # Minimal Harness
@@ -174,7 +174,7 @@ check: lint types test <if E2E exists:e2e</if>
 <TAB>@echo "ALL CHECKS PASSED"
 ```
 
-Unknown command: `<TAB># TODO: fill in test command` plus `<TAB>@exit 1`, so `make check` stays red until it is filled.
+For every target whose command is unknown, emit a `TODO` comment and `exit 1` so `make check` stays red until filled. Example: `<TAB># TODO: fill in test command` plus `<TAB>@exit 1`.
 
 Done when `make check` has run, and every red result is either fixed or traced to a `TODO`.
 
