@@ -119,6 +119,8 @@ Split targets into two tiers:
 `make help` shows only public targets, plus a pointer: `Run 'make help-all' for the full list.`
 `make help-all` shows both groups, clearly separated.
 
+Use plain `@echo` lines for `help` and `help-all`. Do not use `grep`+`##` (self-documenting comments): it requires every target to carry a `##` comment, is fragile, and produces inconsistent output formatting.
+
 This keeps `make` friendly for first-time users while preserving full discoverability.
 
 ### Template
@@ -132,23 +134,23 @@ This keeps `make` friendly for first-time users while preserving full discoverab
 help:
 <TAB>@echo "Usage: make [target]"
 <TAB>@echo ""
-<TAB>@echo "  check   — run lint + types + test<if E2E exists:> + e2e</if>"
-<TAB>@echo "  dev     — start dev server"
-<TAB>@echo "  test    — run tests"
+<TAB>@echo "  check   - run lint + types + test<if E2E exists:> + e2e</if>"
+<TAB>@echo "  dev     - start dev server"
+<TAB>@echo "  test    - run tests"
 <TAB>@echo ""
 <TAB>@echo "Run 'make help-all' for the full list, including internal targets."
 
 help-all:
 <TAB>@echo "Public targets:"
-<TAB>@echo "  check   — run lint + types + test<if E2E exists:> + e2e</if>"
-<TAB>@echo "  dev     — start dev server"
-<TAB>@echo "  test    — run tests"
+<TAB>@echo "  check   - run lint + types + test<if E2E exists:> + e2e</if>"
+<TAB>@echo "  dev     - start dev server"
+<TAB>@echo "  test    - run tests"
 <TAB>@echo ""
 <TAB>@echo "Internal targets (typically called via check):"
-<TAB>@echo "  lint    — run linter"
-<TAB>@echo "  types   — run type checker"<if E2E exists:>
-<TAB>@echo "  e2e     — run end-to-end tests"</if>
-<TAB>@echo "  setup   — <package manager> install"
+<TAB>@echo "  lint    - run linter"
+<TAB>@echo "  types   - run type checker"<if E2E exists:>
+<TAB>@echo "  e2e     - run end-to-end tests"</if>
+<TAB>@echo "  setup   - <package manager> install"
 
 setup:
 <TAB><package manager install command>
