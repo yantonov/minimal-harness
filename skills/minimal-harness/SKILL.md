@@ -109,8 +109,20 @@ Write it in the repository root. Every target runs the real command; a target th
 ### Template
 
 ```makefile
-.PHONY: setup dev test types lint check
+.PHONY: help setup dev test types lint check
 <if E2E exists:.PHONY: e2e</if>
+
+.DEFAULT_GOAL := help
+
+help:
+<TAB>@echo "Available targets:"
+<TAB>@echo "  setup   — <package manager> install"
+<TAB>@echo "  dev     — start dev server"
+<TAB>@echo "  test    — run tests"
+<TAB>@echo "  types   — run type checker"
+<TAB>@echo "  lint    — run linter"<if E2E exists:>
+<TAB>@echo "  e2e     — run end-to-end tests"</if>
+<TAB>@echo "  check   — run lint + types + test<if E2E exists:> + e2e</if>"
 
 setup:
 <TAB><package manager install command>
