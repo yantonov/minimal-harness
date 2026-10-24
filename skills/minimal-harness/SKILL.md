@@ -106,23 +106,49 @@ Done when every template section is filled or marked `TODO`, and every file it n
 
 Write it in the repository root. Every target runs the real command; a target that only echoes is a lie.
 
+### Grouping targets
+
+Split targets into two tiers:
+
+- **Public** — the targets a casual user or contributor needs day-to-day.
+  Minimum: `check`. Typically also: `dev`, `build`, `test`, `run`, `install`.
+- **Internal** — individual steps that a public target already calls (`lint`, `types`, `e2e`),
+  plus maintenance tools (`outdated`, `setup`). They exist and are callable,
+  but are hidden from the default help.
+
+`make help` shows only public targets, plus a pointer: `Run 'make help-all' for the full list.`
+`make help-all` shows both groups, clearly separated.
+
+This keeps `make` friendly for first-time users while preserving full discoverability.
+
 ### Template
 
 ```makefile
-.PHONY: help setup dev test types lint check
+.PHONY: help help-all setup dev test types lint check
 <if E2E exists:.PHONY: e2e</if>
 
 .DEFAULT_GOAL := help
 
 help:
-<TAB>@echo "Available targets:"
-<TAB>@echo "  setup   — <package manager> install"
+<TAB>@echo "Usage: make [target]"
+<TAB>@echo ""
+<TAB>@echo "  check   — run lint + types + test<if E2E exists:> + e2e</if>"
 <TAB>@echo "  dev     — start dev server"
 <TAB>@echo "  test    — run tests"
-<TAB>@echo "  types   — run type checker"
-<TAB>@echo "  lint    — run linter"<if E2E exists:>
-<TAB>@echo "  e2e     — run end-to-end tests"</if>
+<TAB>@echo ""
+<TAB>@echo "Run 'make help-all' for the full list, including internal targets."
+
+help-all:
+<TAB>@echo "Public targets:"
 <TAB>@echo "  check   — run lint + types + test<if E2E exists:> + e2e</if>"
+<TAB>@echo "  dev     — start dev server"
+<TAB>@echo "  test    — run tests"
+<TAB>@echo ""
+<TAB>@echo "Internal targets (typically called via check):"
+<TAB>@echo "  lint    — run linter"
+<TAB>@echo "  types   — run type checker"<if E2E exists:>
+<TAB>@echo "  e2e     — run end-to-end tests"</if>
+<TAB>@echo "  setup   — <package manager> install"
 
 setup:
 <TAB><package manager install command>
